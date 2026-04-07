@@ -4,4 +4,4 @@ Disallow: /admin.html
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://121one2one.example.com/sitemap.xml
+Sitemap: https://hvns.121minamiorui.com/sitemap.xml
