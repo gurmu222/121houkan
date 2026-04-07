@@ -169,7 +169,7 @@ section{padding:90px 0}
 .tel-big:hover{transform:scale(1.04)}
 .tel-big::before{content:"📞 ";font-size:1.6rem;vertical-align:middle}
 .tel-sub{margin-top:24px;font-size:.95rem;opacity:.9}
-.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:50px;text-align:left}
+.contact-wrap{display:grid;grid-template-columns:1fr;gap:40px;margin-top:50px;text-align:left;max-width:720px;margin-left:auto;margin-right:auto}
 .contact-card{background:rgba(255,255,255,.18);backdrop-filter:blur(12px);padding:42px;border-radius:36px;border:1px solid rgba(255,255,255,.35);box-shadow:0 12px 40px rgba(0,0,0,.08)}
 .contact-card h3{font-size:1.2rem;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .contact-card.tel-card{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
@@ -213,11 +213,13 @@ footer .fnav a:hover{color:var(--main-d)}
 .copy{margin-top:24px;padding-top:24px;border-top:1px dashed var(--main-l);font-size:.78rem;color:var(--text-l)}
 
 @media(max-width:768px){
+  .logo-wrap img{width:130px;height:40px}
   .nav ul{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;padding:20px;gap:14px;box-shadow:0 8px 20px rgba(0,0,0,.1)}
   .nav ul.open{display:flex}
   .menu-toggle{display:block}
   .hero{grid-template-columns:1fr;min-height:auto}
-  .hero-text{padding:120px 24px 60px;max-width:100%;text-align:center;align-items:center;margin:0 auto}
+  .hero-visual{order:1}
+  .hero-text{order:2;padding:60px 24px 60px;max-width:100%;text-align:center;align-items:center;margin:0 auto}
   .hero h1{font-size:1.7rem}
   .hero p.lead{font-size:.95rem;margin-left:auto;margin-right:auto}
   .hero-points{justify-content:center}
