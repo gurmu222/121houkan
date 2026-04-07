@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>投稿管理 | One to One</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<meta name="api-base" content="">
+<link rel="stylesheet" href="css/style.css">
+<style>
+body{padding:40px 20px;background:var(--soft);min-height:100vh}
+.admin{max-width:960px;margin:0 auto;background:#fff;padding:40px;border-radius:32px;box-shadow:var(--shadow)}
+.admin h1{color:var(--main-d);margin-bottom:8px;font-size:1.6rem}
+.admin .sub{color:var(--text-l);font-size:.85rem;margin-bottom:24px}
+.admin form{background:var(--soft);padding:28px;border-radius:24px;margin-bottom:36px}
+.admin .row{margin-bottom:14px}
+.admin label{display:block;font-weight:700;font-size:.85rem;color:var(--main-d);margin-bottom:6px}
+.admin input[type=text],.admin input[type=date],.admin input[type=password],.admin select,.admin textarea{width:100%;padding:12px 14px;border:1px solid var(--main-l);border-radius:14px;font-family:inherit;font-size:.95rem;background:#fff;color:var(--text)}
+.admin textarea{resize:vertical;min-height:160px}
+.admin .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.admin button{background:var(--main);color:#fff;border:none;padding:12px 24px;border-radius:50px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:8px;transition:transform .2s}
+.admin button:hover{transform:translateY(-2px)}
+.admin button.danger{background:#e07b7b}
+.admin button.ghost{background:#fff;color:var(--main-d);border:2px solid var(--main)}
+.admin table{width:100%;border-collapse:collapse;margin-top:10px}
+.admin th,.admin td{padding:12px 10px;border-bottom:1px solid var(--main-l);text-align:left;font-size:.9rem}
+.admin th{color:var(--main-d);font-size:.78rem;letter-spacing:.05em}
+.admin td button{padding:6px 14px;font-size:.78rem;margin:0 4px 0 0}
+.admin .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 20px;align-items:center}
+.admin .note{background:#e8f4f0;border:1px solid var(--main-l);color:var(--main-d);padding:14px 18px;border-radius:14px;font-size:.82rem;line-height:1.7;margin-bottom:24px}
+.admin .upload-zone{background:#fff;border:2px dashed var(--main-l);border-radius:14px;padding:20px;text-align:center}
+.admin .upload-zone label{display:inline-block;background:var(--accent);color:#fff;padding:10px 22px;border-radius:50px;cursor:pointer;font-weight:700;margin-bottom:10px}
+.admin .upload-zone input[type=file]{display:none}
+.admin .preview{margin-top:14px}
+.login-box{max-width:420px;margin:80px auto;background:#fff;padding:40px;border-radius:32px;box-shadow:var(--shadow);text-align:center}
+.login-box h1{color:var(--main-d);margin-bottom:24px}
+.login-box .row{margin-bottom:14px;text-align:left}
+.login-error{color:#c4626c;font-size:.85rem;margin-top:10px;min-height:1.2em}
+</style>
+</head>
+<body>
+
+<!-- ログイン画面 -->
+<div id="loginScreen" class="login-box" style="display:none">
+  <h1>🔐 管理者ログイン</h1>
+  <form onsubmit="return doLogin(event)">
+    <div class="row">
+      <label>ユーザー名</label>
+      <input type="text" id="loginUser" required autocomplete="username">
+    </div>
+    <div class="row">
+      <label>パスワード</label>
+      <input type="password" id="loginPass" required autocomplete="current-password">
+    </div>
+    <button type="submit" style="width:100%">ログイン</button>
+    <div class="login-error" id="loginError"></div>
+  </form>
+</div>
+
+<!-- 管理画面本体 -->
+<div id="adminScreen" class="admin" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
+    <h1>📝 投稿管理</h1>
+    <button class="ghost" onclick="adminLogout()" style="margin:0">ログアウト</button>
+  </div>
+  <p class="sub">個人情報保護方針・重要事項説明書・医療DX・情報活用加算・お知らせ</p>
+
+  <div class="note">
+    ✓ サーバーDB保存・全端末で共有<br>
+    ✓ 添付ファイル: 画像(JPEG/PNG/WebP/GIF)・PDF / 最大10MB<br>
+    ✓ 認証: Basic認証 / CORS制限 / ファイル種別検証
+  </div>
+
+  <form id="postForm" onsubmit="return submitPost(event)">
+    <input type="hidden" id="postId">
+    <div class="grid2">
+      <div class="row">
+        <label>カテゴリ</label>
+        <select id="postCategory" required>
+          <option value="privacy">個人情報保護方針</option>
+          <option value="important">重要事項説明書</option>
+          <option value="dx">訪問看護医療DX</option>
+          <option value="info">情報活用加算</option>
+          <option value="news">お知らせ</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>掲載日</label>
+        <input type="date" id="postDate" required>
+      </div>
+    </div>
+    <div class="row">
+      <label>タイトル</label>
+      <input type="text" id="postTitle" required placeholder="例: 個人情報保護方針" maxlength="200">
+    </div>
+    <div class="row">
+      <label>本文</label>
+      <textarea id="postBody" required placeholder="本文を入力してください（改行可）" maxlength="20000"></textarea>
+    </div>
+    <div class="row">
+      <label>添付ファイル(画像 or PDF / 最大10MB)</label>
+      <div class="upload-zone">
+        <label for="fileInput">📎 ファイルを選択</label>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onchange="handleUpload(event)">
+        <div class="preview" id="attachPreview"><span style="color:#888;font-size:.85rem">添付なし</span></div>
+      </div>
+    </div>
+    <button type="submit">保存する</button>
+    <button type="button" class="ghost" onclick="resetForm()">クリア</button>
+  </form>
+
+  <h2 style="color:var(--main-d);font-size:1.2rem;margin-bottom:14px">投稿一覧</h2>
+  <div class="toolbar">
+    <button class="ghost" onclick="renderAdmin()">↻ 再読込</button>
+    <a href="index.html" style="margin-left:auto;color:var(--main-d);font-weight:700">← サイトに戻る</a>
+  </div>
+  <table>
+    <thead><tr><th>カテゴリ</th><th>タイトル</th><th>掲載日</th><th>添付</th><th>操作</th></tr></thead>
+    <tbody id="adminList"></tbody>
+  </table>
+</div>
+
+<script src="js/posts.js"></script>
+<script>
+async function doLogin(e){
+  e.preventDefault();
+  const u = document.getElementById('loginUser').value;
+  const p = document.getElementById('loginPass').value;
+  try{
+    await adminLogin(u, p);
+    showAdmin();
+  } catch(err) {
+    document.getElementById('loginError').textContent = err.message;
+  }
+  return false;
+}
+function showAdmin(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminScreen').style.display = 'block';
+  document.getElementById('postDate').value = new Date().toISOString().slice(0,10);
+  renderAdmin();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display = 'block';
+  document.getElementById('adminScreen').style.display = 'none';
+}
+// 起動時: 認証チェック
+(async () => {
+  if (isLoggedIn()) {
+    try { await fetch(`${API_BASE}/auth/check`, { headers: authHeader() }).then(r => { if(!r.ok) throw 0; }); showAdmin(); }
+    catch { sessionStorage.removeItem('one2one_auth'); showLogin(); }
+  } else showLogin();
+})();
+</script>
+</body>
+</html>

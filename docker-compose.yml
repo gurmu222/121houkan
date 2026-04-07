@@ -1,0 +1,26 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: one2one-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+  api:
+    build: ./api
+    container_name: one2one-api
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DATA_FILE: /data/db.json
+      UPLOAD_DIR: /data/uploads
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASS: ${ADMIN_PASS:-changeme}
+      ALLOW_ORIGIN: ${ALLOW_ORIGIN:-http://localhost:8080}
+    volumes:
+      - ./db.json:/data/db.json
+      - ./uploads:/data/uploads
+    restart: unless-stopped
