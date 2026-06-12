@@ -4,4 +4,4 @@ Disallow: /admin.html
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://hvns.121minamiorui.com/sitemap.xml
+Sitemap: https://hvns.121minamiorui.co.jp/sitemap.xml
